@@ -12,9 +12,12 @@ import static java.lang.Thread.sleep;
 
 public class Connector {
     private ConnectionState state;
-    List<ConnectionCondition> conditions = new ArrayList<>();
+    private final List<ConnectionCondition> conditions = new ArrayList<>();
 
-    //Use this to access this object
+    //Private constructor for singleton classes, we only need to create this object once
+    private Connector() {}
+
+    //Use this to access this object. Created the object here
     private static final Connector connector = new Connector();
 
     //using PW to send messages to the server (string messages which are converted into JSON)
@@ -30,7 +33,7 @@ public class Connector {
         final String host = Settings.getInstanceOf().getHost();
         final int port = Settings.getInstanceOf().getPort();
 
-        //If we're not already connecting or connected, continue the conencting procdure
+        //If we're not already connecting or connected, continue the connecting procedure
         this.state = ConnectionState.CONNECTING;
 
         //Thread to attempt connection
@@ -46,14 +49,14 @@ public class Connector {
                         connected = true;
                         break;
                     } catch (IOException e) {
-                        Log.e("Connection Failed", "Connection failed, reattempting in 2 seconds." + e.getMessage());
+                        Log.e("Connection Failed", "Connection failed, reattempting in 5 seconds." + e.getMessage());
                     }
 
-                    //If we failed to connect, wait for 2 seconds before reattempting
+                    //If we failed to connect, wait for 5 seconds before reattempting
                     try {
-                        sleep(2000);
+                        sleep(5000);
                     } catch (InterruptedException e) {
-                        Log.e("Reattempting connection", "Could not sleep for 2 seconds. ");
+                        Log.e("Reattempting connection", "Couldn't attempt again ");
                     }
                 }
 
@@ -74,6 +77,11 @@ public class Connector {
         }).start();
     }
 
+    public void sendMessage(String message){
+        Log.d("Message", message);
+        pw.println(message);
+    }
+
     //This method can be used to disconnect the client from the server (prompted by the user)
     public void disconnect() {
         state = ConnectionState.DISCONNECTED;
@@ -87,7 +95,7 @@ public class Connector {
     }
 
     //Getter method to return instance variable
-    public static Connector getInstanceOf() {
+    public static Connector getInstance() {
         return connector;
     }
 

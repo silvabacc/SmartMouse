@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -13,15 +14,20 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bnaze.smartmouse.networkutils.ConnectionCondition;
 import com.bnaze.smartmouse.networkutils.Connector;
+import com.bnaze.smartmouse.networkutils.MessageSender;
 import com.bnaze.smartmouse.networkutils.Settings;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         setContentView(R.layout.activity_main);
 
         context = this;
+
+        MessageSender.getInstance().init();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -110,13 +118,13 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                 Settings.getInstanceOf().setPort(port);
 
                 //Attempting connection here
-                Connector.getInstanceOf().connect();
+                Connector.getInstance().connect();
             }
             break;
             case -2: {
                 // negative
                 //If the user clicked disconnect, attempt to disconnect
-                Connector.getInstanceOf().disconnect();
+                Connector.getInstance().disconnect();
             }
             break;
         }
@@ -177,4 +185,5 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             return fragmentTitles.get(position);
         }
     }
+
 }

@@ -7,22 +7,32 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bnaze.smartmouse.networkutils.ConnectionCondition;
 import com.bnaze.smartmouse.networkutils.Connector;
+import com.bnaze.smartmouse.networkutils.Message;
+import com.bnaze.smartmouse.networkutils.MessageQueue;
+import com.bnaze.smartmouse.networkutils.MessageType;
+import com.google.android.material.appbar.AppBarLayout;
 
-import java.sql.Connection;
+public class AirMouseFragment extends Fragment implements ConnectionCondition, SensorEventListener, GestureDetector.OnGestureListener {
 
-public class AirMouseFragment extends Fragment implements ConnectionCondition, SensorEventListener {
-
+    //Sensor values for gyroscope
     private SensorManager sensorManager;
     private Sensor sensor;
 
+    //FragmentListener to communicate with MainActivity
     private FragmentListener callback;
     private boolean connected;
 
@@ -40,7 +50,7 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Connector.getInstanceOf().addConnectionCondition(this);
+        Connector.getInstance().addConnectionCondition(this);
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -58,7 +68,8 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(connected){
-            CommandQueue.getInstance().push(Command.of(CommandType.AIR_MOUSE, MoveValue.of( sensorEvent.values[2]*65, sensorEvent.values[0]*65)));
+            //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE,  "{'x': " + sensorEvent.values[2]*65 + ", 'y': " + sensorEvent.values[0]*65+"}"));
         }
     }
 
@@ -67,6 +78,7 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
 
     }
 
+    //Method called in MainActivity
     public void setAirMouseSelectedListener(FragmentListener callback) {
         this.callback = callback;
     }
@@ -110,6 +122,35 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
         });
     }
 
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+        Log.d("onLongPressed","LongPress");
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
 }
 
 

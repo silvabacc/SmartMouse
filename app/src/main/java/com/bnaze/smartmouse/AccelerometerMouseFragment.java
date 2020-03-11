@@ -32,8 +32,6 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Connector.getInstanceOf().addConnectionCondition(this);
     }
 
     @Override

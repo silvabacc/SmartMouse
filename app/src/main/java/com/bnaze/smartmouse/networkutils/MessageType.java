@@ -1,0 +1,5 @@
+package com.bnaze.smartmouse.networkutils;
+
+public enum MessageType {
+    MOUSE_MOVE,ACC_MOVE, MOUSE_LEFT_CLICK, NO_MESSAGE,  AIR_MOUSE, MOUSE_DOUBLE_CLICK, MOUSE_RIGHT_CLICK, MOUSE_SCROLL, KEYBOARD_INPUT
+}
