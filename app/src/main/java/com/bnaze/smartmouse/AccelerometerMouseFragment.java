@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.bnaze.smartmouse.networkutils.ConnectionCondition;
 import com.bnaze.smartmouse.networkutils.Connector;
 
-public class AccelerometerMouseFragment extends Fragment implements ConnectionCondition {
+public class AccelerometerMouseFragment extends Fragment {
 
     private FragmentListener callback;
     private boolean connected;
@@ -63,44 +63,6 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
         }
     }
 
-    @Override
-    public void onConnected() {
-        connected = true;
-        callback.ConnectedValue(true);
-        final String msg = "Connection established with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onDisconnected() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Connection disrupted";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onConnectionFailed() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Could not establish connection with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
     /*
     @Override

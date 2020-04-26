@@ -4,18 +4,20 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
-import com.bnaze.smartmouse.networkutils.ConnectionCondition;
-
-public class TouchScreenMouseFragment extends Fragment implements ConnectionCondition {
+public class TouchScreenMouseFragment extends Fragment implements View.OnTouchListener {
 
     private FragmentListener callback;
     private boolean connected;
     private boolean onPaused;
+
+    private GestureDetector detector;
 
     public TouchScreenMouseFragment() {
         // Required empty public constructor
@@ -31,16 +33,34 @@ public class TouchScreenMouseFragment extends Fragment implements ConnectionCond
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        onPaused = false;
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_touch_screen_mouse, container, false);
+        View view = inflater.inflate(R.layout.fragment_touch_screen_mouse, container, false);
+
+        RelativeLayout touchScreen = view.findViewById(R.id.TouchScreenRelativeLayout);
+        touchScreen.setOnTouchListener(this);
+
+        return view;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        onPaused = false;
+
+        detector = new GestureDetector(getActivity(), new TouchScreenGesture());
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        connected = callback.ConnectedValue();
+
+        if (connected && onPaused == false) {
+            detector.onTouchEvent(event);
+        }
+        return true;
     }
 
     @Override
@@ -60,45 +80,6 @@ public class TouchScreenMouseFragment extends Fragment implements ConnectionCond
                 onPaused = false;
             }
         }
-    }
-
-    @Override
-    public void onConnected() {
-        connected = true;
-        callback.ConnectedValue(true);
-        final String msg = "Connection established with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onDisconnected() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Connection disrupted";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onConnectionFailed() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Could not establish connection with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     /*

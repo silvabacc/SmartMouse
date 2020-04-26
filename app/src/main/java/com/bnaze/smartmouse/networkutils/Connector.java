@@ -41,23 +41,13 @@ public class Connector {
             @Override
             public void run() {
                 boolean connected = false;
-                //Attempt to connect done here. 5 attempts are allowed before connection failed
-                for (int i = 0; i < 5; i++) {
-                    try {
+
+                try {
                         Socket socket = new Socket(host, port);
                         pw = new PrintWriter(socket.getOutputStream(), true);
                         connected = true;
-                        break;
-                    } catch (IOException e) {
-                        Log.e("Connection Failed", "Connection failed, reattempting in 5 seconds." + e.getMessage());
-                    }
-
-                    //If we failed to connect, wait for 5 seconds before reattempting
-                    try {
-                        sleep(5000);
-                    } catch (InterruptedException e) {
-                        Log.e("Reattempting connection", "Couldn't attempt again ");
-                    }
+                } catch (IOException e) {
+                        Log.e("Connection Failed", "Connection failed" + e.getMessage());
                 }
 
                 //Client is connected if reached here

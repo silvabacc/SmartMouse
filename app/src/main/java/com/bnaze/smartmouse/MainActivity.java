@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener, FragmentListener {
+public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener, FragmentListener, ConnectionCondition {
 
     private Toolbar toolbar;
     private ViewPager viewPager;
@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
+
+        Connector.getInstance().addConnectionCondition(this);
 
         airMouseFragment = new AirMouseFragment();
         accelerometerMouseFragment = new AccelerometerMouseFragment();
@@ -150,8 +152,44 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     @Override
-    public void ConnectedValue(boolean connected) {
-        this.connected = connected;
+    public boolean ConnectedValue() {
+        return connected;
+    }
+
+    @Override
+    public void onConnected() {
+        connected = true;
+        final String msg = "Connection established with host machine";
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void onDisconnected() {
+        connected = false;
+        final String msg = "Connection disrupted";
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void onConnectionFailed() {
+        connected = false;
+        final String msg = "Could not establish connection with host machine";
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {

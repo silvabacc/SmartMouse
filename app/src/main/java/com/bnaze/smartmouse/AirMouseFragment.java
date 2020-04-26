@@ -15,15 +15,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
-import com.bnaze.smartmouse.networkutils.ConnectionCondition;
-import com.bnaze.smartmouse.networkutils.Connector;
 import com.bnaze.smartmouse.networkutils.Message;
 import com.bnaze.smartmouse.networkutils.MessageQueue;
 import com.bnaze.smartmouse.networkutils.MessageType;
 
-public class AirMouseFragment extends Fragment implements ConnectionCondition, SensorEventListener, GestureDetector.OnGestureListener {
+public class AirMouseFragment extends Fragment implements SensorEventListener, View.OnTouchListener {
 
     //Sensor values for gyroscope
     private SensorManager sensorManager;
@@ -34,6 +32,7 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     private boolean connected;
 
     private boolean onPaused;
+    private GestureDetector gestureDetector;
 
     public AirMouseFragment() {
         // Required empty public constructor
@@ -50,9 +49,8 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
         super.onCreate(savedInstanceState);
 
         onPaused = false;
-        Connector.getInstance().addConnectionCondition(this);
 
-
+        gestureDetector = new GestureDetector(getActivity(), new AirMouseGesture());
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -63,16 +61,21 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_air_mouse, container, false);
+        View view = inflater.inflate(R.layout.fragment_air_mouse, container, false);
+
+        RelativeLayout touchScreen = view.findViewById(R.id.AirMouseTouchScreen);
+        touchScreen.setOnTouchListener(this);
+        return view;
     }
 
     //Do this
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(onPaused == true){
-            Log.d("onPauseTrue","Airmouse is paused");
             return;
         }
+
+        connected = callback.ConnectedValue();
 
         if(connected){
             //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
@@ -109,90 +112,14 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     }
 
     @Override
-    public void onConnected() {
-        connected = true;
-        callback.ConnectedValue(true);
-        final String msg = "Connection established with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
+    public boolean onTouch(View v, MotionEvent event) {
+        connected = callback.ConnectedValue();
+
+        if (connected && onPaused == false) {
+            gestureDetector.onTouchEvent(event);
+        }
+        return true;
     }
-
-    @Override
-    public void onDisconnected() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Connection disrupted";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onConnectionFailed() {
-        connected = false;
-        callback.ConnectedValue(false);
-        final String msg = "Could not establish connection with host machine";
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-        Log.d("onLongPressed","LongPress");
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
-    }
-
-    @Override
-    public void onPause() {
-        Log.e("states", "OnPause of AirMouse");
-        onPaused = true;
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        Log.e("states", "OnResume of AirMouse");
-        onPaused = false;
-        super.onResume();
-
-    }
-
 }
 
 
