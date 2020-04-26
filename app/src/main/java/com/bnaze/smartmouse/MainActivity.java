@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -137,14 +138,14 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             mouseFragment.setAirMouseSelectedListener(this);
         }
 
-        if (fragment instanceof AccelerometerMouseFragment) {
-            AccelerometerMouseFragment mouseFragment = (AccelerometerMouseFragment) fragment;
-            mouseFragment.setAccelerometerMouseListener(this);
-        }
-
         if (fragment instanceof TouchScreenMouseFragment) {
             TouchScreenMouseFragment mouseFragment = (TouchScreenMouseFragment) fragment;
             mouseFragment.setTouchScreenMouseListener(this);
+        }
+
+        if (fragment instanceof AccelerometerMouseFragment) {
+            AccelerometerMouseFragment mouseFragment = (AccelerometerMouseFragment) fragment;
+            mouseFragment.setAccelerometerMouseListener(this);
         }
     }
 

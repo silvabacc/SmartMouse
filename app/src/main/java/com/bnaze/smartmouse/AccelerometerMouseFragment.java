@@ -2,6 +2,8 @@ package com.bnaze.smartmouse;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +16,10 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
 
     private FragmentListener callback;
     private boolean connected;
+    private boolean onPaused;
 
     public AccelerometerMouseFragment() {
         // Required empty public constructor
-
     }
 
     public static AccelerometerMouseFragment newInstance() {
@@ -32,6 +34,7 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        onPaused = false;
     }
 
     @Override
@@ -39,6 +42,25 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_accelerometer_mouse, container, false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Make sure that we are currently visible
+        if (this.isVisible()) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                Log.d("Fragments", "Acc Not visible anymore.");
+                // TODO stop audio playback
+                onPaused = true;
+            }
+            else{
+                Log.d("Fragments", "Acc visible.");
+                onPaused = false;
+            }
+        }
     }
 
     @Override
@@ -79,4 +101,20 @@ public class AccelerometerMouseFragment extends Fragment implements ConnectionCo
             }
         });
     }
+
+    /*
+    @Override
+    public void onPause() {
+        Log.e("states", "OnPause of AccMouse");
+        onPaused = true;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        Log.e("states", "OnResume of AccMouse");
+        onPaused = false;
+        super.onResume();
+    }
+     */
 }

@@ -7,8 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -24,7 +22,6 @@ import com.bnaze.smartmouse.networkutils.Connector;
 import com.bnaze.smartmouse.networkutils.Message;
 import com.bnaze.smartmouse.networkutils.MessageQueue;
 import com.bnaze.smartmouse.networkutils.MessageType;
-import com.google.android.material.appbar.AppBarLayout;
 
 public class AirMouseFragment extends Fragment implements ConnectionCondition, SensorEventListener, GestureDetector.OnGestureListener {
 
@@ -35,6 +32,8 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     //FragmentListener to communicate with MainActivity
     private FragmentListener callback;
     private boolean connected;
+
+    private boolean onPaused;
 
     public AirMouseFragment() {
         // Required empty public constructor
@@ -50,7 +49,10 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        onPaused = false;
         Connector.getInstance().addConnectionCondition(this);
+
+
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -67,9 +69,32 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     //Do this
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        if(onPaused == true){
+            Log.d("onPauseTrue","Airmouse is paused");
+            return;
+        }
+
         if(connected){
             //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
             MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE,  "{'x': " + sensorEvent.values[2]*65 + ", 'y': " + sensorEvent.values[0]*65+"}"));
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Make sure that we are currently visible
+        if (this.isVisible()) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                Log.d("Fragments", "AirMouse Not visible anymore");
+                onPaused = true;
+            }
+            else{
+                Log.d("Fragments", "AirMouse visible.");
+                onPaused = false;
+            }
         }
     }
 
@@ -122,6 +147,7 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
         });
     }
 
+
     @Override
     public boolean onDown(MotionEvent e) {
         return false;
@@ -151,6 +177,22 @@ public class AirMouseFragment extends Fragment implements ConnectionCondition, S
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return false;
     }
+
+    @Override
+    public void onPause() {
+        Log.e("states", "OnPause of AirMouse");
+        onPaused = true;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        Log.e("states", "OnResume of AirMouse");
+        onPaused = false;
+        super.onResume();
+
+    }
+
 }
 
 
