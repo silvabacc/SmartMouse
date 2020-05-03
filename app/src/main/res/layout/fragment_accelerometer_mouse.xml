@@ -17,4 +17,27 @@
         android:onClick="connectionSettings"
         android:src="@drawable/ic_settings" />
 
+    <Button
+        android:id="@+id/calibratebtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="13dp"
+        android:text="Calibrate" />
+
+    <TextView
+        android:id="@+id/calibratingtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/calibratebtn"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginBottom="9dp" />
+
 </RelativeLayout>

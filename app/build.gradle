@@ -30,7 +30,7 @@ dependencies {
 
     //Libraries I've used
     implementation 'com.google.android.material:material:1.2.0-alpha03'
-    implementation 'com.github.KalebKE:FSensor:v1.2.1'
+    implementation 'com.github.KalebKE:FSensor:v2.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.x.x'
 }

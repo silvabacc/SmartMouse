@@ -16,14 +16,19 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bnaze.smartmouse.networkutils.ConnectionCondition;
 import com.bnaze.smartmouse.networkutils.Connector;
+import com.bnaze.smartmouse.networkutils.Message;
+import com.bnaze.smartmouse.networkutils.MessageQueue;
 import com.bnaze.smartmouse.networkutils.MessageSender;
+import com.bnaze.smartmouse.networkutils.MessageType;
 import com.bnaze.smartmouse.networkutils.Settings;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -104,6 +109,20 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         builder.setView(dialogView);
         builder.setCancelable(false);
         builder.show();
+    }
+
+    public void toggleKeyboard(View v){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.RESULT_UNCHANGED_SHOWN);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("keyevent",event + " ");
+        if (connected) {
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.KEYBOARD_INPUT, ReturnKey.key(event).toString()));
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

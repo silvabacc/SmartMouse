@@ -81,20 +81,4 @@ public class TouchScreenMouseFragment extends Fragment implements View.OnTouchLi
             }
         }
     }
-
-    /*
-    @Override
-    public void onPause() {
-        Log.e("states", "OnPause of TouchScreen");
-        onPaused = true;
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        Log.e("states", "OnResume of TouchScreen");
-        onPaused = false;
-        super.onResume();
-    }
-     */
 }

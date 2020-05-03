@@ -20,4 +20,15 @@
         android:onClick="connectionSettings"
         android:src="@drawable/ic_settings" />
 
+    <Button
+        android:id="@+id/keyboardbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="12dp"
+        android:onClick="toggleKeyboard"
+        android:layout_marginBottom="14dp"
+        android:text="Keyboard" />
+
 </RelativeLayout>
