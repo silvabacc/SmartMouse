@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-//import com.bnaze.smartmouse.sensorutils.LinearAccelerationSensorLiveData;
 import com.bnaze.smartmouse.networkutils.Message;
 import com.bnaze.smartmouse.networkutils.MessageQueue;
 import com.bnaze.smartmouse.networkutils.MessageType;
@@ -86,28 +85,19 @@ public class AccelerometerMouseFragment extends Fragment{
     private SensorSubject.SensorObserver sensorObserver = new SensorSubject.SensorObserver() {
         @Override
         public void onSensorChanged(float[] values) {
-            Log.d("paused",onPaused + " ");
-            if(onPaused == true){
+            //Determine if this fragment is being used by the user
+            //If not, return
+            if (isAdded() && isVisible() && getUserVisibleHint()) {
+                onPaused = false;
+            }
+            else{
+                onPaused = true;
                 return;
             }
 
             //Remove any anomalies samples
             if(Double.isInfinite(values[3]) || Double.isNaN(values[3])){
                 return;
-            }
-
-            //If user requested for calibration, offset variables are changed
-            if(calibrateOn == true){
-                offsetX = offsetX + values[0];
-                offsetY = offsetY + values[1];
-                sampledCount++;
-
-                if(sampledCount == 1024){
-                    offsetX = offsetX/1024;
-                    offsetY = offsetY/1024;
-                    sampledCount = 0;
-                    calibrateOn = false;
-                }
             }
 
             //Mechnical filtering window. This is our no-movement condition
@@ -130,14 +120,10 @@ public class AccelerometerMouseFragment extends Fragment{
 
 
     public void integrate(float[] values){
-        float timeDiff = values[3]-time1;
-
-        Log.d("time",timeDiff + " ");
+        float timeDiff = (float) 0.08;
 
         float vx2 = vx1 + ((values[0]+offsetX + ax2)/2) * timeDiff;
         float vy2 = vy1 + ((values[1]+offsetX + ay2)/2) * timeDiff;
-
-        Log.d("velocity",vx2 + " " + vx1);
 
         float px2 = px1 + ((vx1 + vx2)/2) * timeDiff;
         float py2 = py1 + ((vy1 + vy2)/2) * timeDiff;
@@ -177,13 +163,14 @@ public class AccelerometerMouseFragment extends Fragment{
         ax2 = values[0];
         ay2 = values[1];
 
-        time1 = values[3];
+        //time1 = values[3];
 
         //Data transfer
         connected = callback.ConnectedValue();
         if(connected){
-            double sensitivity = 150;
-            MessageQueue.getInstance().push(Message.newMessage(MessageType.ACC_MOVE,  "{'x': " + px2*sensitivity + ", 'y': " + py2*sensitivity +"}"));
+            double sensitivity = 1;
+            //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.ACC_MOVE,  "{'x': " + -px2*sensitivity + ", 'y': " + -py2*sensitivity +"}"));
         }
     }
 

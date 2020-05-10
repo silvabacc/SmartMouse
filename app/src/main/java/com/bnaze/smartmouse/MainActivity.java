@@ -71,15 +71,15 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         Connector.getInstance().addConnectionCondition(this);
 
         airMouseFragment = new AirMouseFragment();
-        accelerometerMouseFragment = new AccelerometerMouseFragment();
         touchScreenMouseFragment = new TouchScreenMouseFragment();
-
-        tabLayout.setupWithViewPager(viewPager);
+        accelerometerMouseFragment = new AccelerometerMouseFragment();
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
         viewPagerAdapter.addFragment(airMouseFragment,"Air");
         viewPagerAdapter.addFragment(touchScreenMouseFragment,"Touch");
         viewPagerAdapter.addFragment(accelerometerMouseFragment,"Accelero");
+
+        tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(viewPagerAdapter);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_airmouse);
@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d("keyevent",event + " ");
         if (connected) {
             MessageQueue.getInstance().push(Message.newMessage(MessageType.KEYBOARD_INPUT, ReturnKey.key(event).toString()));
         }
@@ -243,5 +242,4 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             return fragmentTitles.get(position);
         }
     }
-
 }

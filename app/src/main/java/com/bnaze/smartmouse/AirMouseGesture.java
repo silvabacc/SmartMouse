@@ -33,5 +33,4 @@ public class AirMouseGesture extends GestureDetector.SimpleOnGestureListener {
         super.onLongPress(e);
         MessageQueue.getInstance().push(Message.newMessage(MessageType.MOUSE_RIGHT_CLICK, null));
     }
-
 }

@@ -29,6 +29,4 @@ public class Message {
     public String toString() {
         return String.format("{\"type\": \"%s\", \"value\": %s}", getType(), getMessageValue());
     }
-
-
 }

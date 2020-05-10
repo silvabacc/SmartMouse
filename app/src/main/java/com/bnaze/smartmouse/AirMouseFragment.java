@@ -68,7 +68,6 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
         return view;
     }
 
-    //Do this
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(onPaused == true){
