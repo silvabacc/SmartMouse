@@ -18,26 +18,31 @@
         android:src="@drawable/ic_settings" />
 
     <Button
-        android:id="@+id/calibratebtn"
+        android:id="@+id/leftclick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="18dp"
-        android:layout_marginLeft="18dp"
-        android:layout_marginBottom="13dp"
-        android:text="Calibrate" />
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="76dp"
+        android:layout_marginLeft="76dp"
+        android:layout_marginTop="195dp"
+        android:text="Left Click" />
 
-    <TextView
-        android:id="@+id/calibratingtext"
+    <Button
+        android:id="@+id/rightclick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/calibratebtn"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginBottom="9dp" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="193dp"
+        android:layout_marginEnd="73dp"
+        android:layout_marginRight="73dp"
+        android:layout_toEndOf="@+id/leftclick"
+        android:layout_toRightOf="@+id/leftclick"
+        android:text="Right Click" />
 
 </RelativeLayout>

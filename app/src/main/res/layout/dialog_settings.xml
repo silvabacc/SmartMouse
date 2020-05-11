@@ -8,7 +8,6 @@
     <EditText
         android:id="@+id/button_host"
         android:inputType="textUri"
-        android:text="192.168.0.2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/host"/>

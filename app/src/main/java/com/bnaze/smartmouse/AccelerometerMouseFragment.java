@@ -71,11 +71,18 @@ public class AccelerometerMouseFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_accelerometer_mouse, container, false);
-        Button calibrateBtn = view.findViewById(R.id.calibratebtn);
-        calibrateBtn.setOnClickListener(new View.OnClickListener() {
+        Button rightClick = view.findViewById(R.id.rightclick);
+        Button leftClick = view.findViewById(R.id.leftclick);
+        rightClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calibrate();
+                mouseClick("right");
+            }
+        });
+        leftClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mouseClick("left");
             }
         });
 
@@ -174,13 +181,17 @@ public class AccelerometerMouseFragment extends Fragment{
         }
     }
 
-    public void calibrate(){
-        offsetX = 0;
-        offsetY = 0;
-        sampledCount = 0;
-        calibrateOn = true;
+    //Clicking for the accelerometer
+    public void mouseClick(String click){
+        if(click.equals("left")){
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.MOUSE_LEFT_CLICK, null));
+        }
+        else{
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.MOUSE_RIGHT_CLICK, null));
+        }
     }
 
+    //Method to determine if the user is using the accelerometer mouse fragment
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);

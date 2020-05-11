@@ -70,6 +70,16 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        //Determine if this fragment is being used by the user
+        //If not, return
+        if (isAdded() && isVisible() && getUserVisibleHint()) {
+            onPaused = false;
+        }
+        else{
+            onPaused = true;
+            return;
+        }
+
         if(onPaused == true){
             return;
         }
