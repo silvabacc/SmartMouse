@@ -42,12 +42,14 @@ The first type of mouse that I implemented was an accelerometer mouse which allo
 the smartphone to mimic an optical mouse. The accelerometer returns the acceleration
 that the phone is travelling at by using acceleration values. I explored ways to calculate
 distance by numerically integrating values to return distance travelled. 
+
 ![](readme_images/1.PNG)
 
 The second type of mouse is an air mouse. This allows the users to hold the phone in
 their hand and move the cursor on the computer by rotating the smartphone. The
 gyroscope returns the change of rotation of the smartphone, which can be used to map
 to pixels and cursor movements. 
+
 ![](readme_images/2.PNG)
 
 Lastly, the third type of mouse is touchscreen. This allows users to use the smartphone
