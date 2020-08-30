@@ -160,17 +160,25 @@ optical mouse.
 # The Three Different Mouse Controls
 Air Mouse (gyroscope mouse)
 
-![](readme_images/a2.PNG)
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a2.jpeg?raw=true" width=300/>
 
 Touchscreen mouse (acts like a touchpad)
 
-![](readme_images/a4.PNG)
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a4.jpeg?raw=true" width=300/>
 
 Accelerometer Mouse (place on flat surface)
 
-![](readme_images/a1.PNG)
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a1.jpeg?raw=true" width=300/>
 
 # Keyboard
 Keyboard inputs are listened and acted on by the server
 
-![](readme_images/a3.PNG)
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a3.jpeg?raw=true" width=300/>
+
+# Connection
+Users should run the server first (in terminal) to obtain the host IP address
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a6.jpeg?raw=true"/>
+
+Connection dialog is available for users to connect to
+
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a5.jpeg?raw=true" width=300/>
