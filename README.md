@@ -155,3 +155,15 @@ However, combing other sensors such as the gyroscope with accelerometer for line
 movement can be explored to create precise positioning with the smartphone. Perhaps
 attaching a small optical sensor and creating a product for the smartphone to mimic an
 optical mouse.
+
+# Screenshots
+# The Three Different Mouse Controls
+Air Mouse (gyroscope mouse)
+![](readme_images/a3.PNG)
+Touchscreen mouse (acts like a touchpad)
+![](readme_images/a4.PNG)
+Accelerometer Mouse (place on flat surface)
+![](readme_images/a1.PNG)
+
+# Keyboard
+Keyboard inputs are listened and acted on by the server
