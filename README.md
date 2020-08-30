@@ -173,7 +173,7 @@ Accelerometer Mouse (place on flat surface)
 # Keyboard
 Keyboard inputs are listened and acted on by the server
 
-<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a3.jpeg?raw=true" width=300/>
+<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a3.png?raw=true" width=300/>
 
 # Connection
 Users should run the server first (in terminal) to obtain the host IP address
