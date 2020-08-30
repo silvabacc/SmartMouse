@@ -176,7 +176,7 @@ Keyboard inputs are listened and acted on by the server
 <img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a3.png?raw=true" width=300/>
 
 # Connection
-Users should run the server first (in terminal) to obtain the host IP address
+Users should run the server first (in terminal) to obtain the host IP address (beginning with 192)
 <img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a6.png?raw=true"/>
 
 Connection dialog is available for users to connect to
