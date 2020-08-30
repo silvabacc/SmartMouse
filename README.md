@@ -159,11 +159,18 @@ optical mouse.
 # Screenshots
 # The Three Different Mouse Controls
 Air Mouse (gyroscope mouse)
-![](readme_images/a3.PNG)
+
+![](readme_images/a2.PNG)
+
 Touchscreen mouse (acts like a touchpad)
+
 ![](readme_images/a4.PNG)
+
 Accelerometer Mouse (place on flat surface)
+
 ![](readme_images/a1.PNG)
 
 # Keyboard
 Keyboard inputs are listened and acted on by the server
+
+![](readme_images/a3.PNG)
