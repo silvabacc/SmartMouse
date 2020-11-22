@@ -1,6 +1,7 @@
 package com.bnaze.smartmouse;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -20,6 +22,20 @@ import android.widget.RelativeLayout;
 import com.bnaze.smartmouse.networkutils.Message;
 import com.bnaze.smartmouse.networkutils.MessageQueue;
 import com.bnaze.smartmouse.networkutils.MessageType;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.location.ActivityTransition;
+import com.google.android.gms.location.ActivityTransitionEvent;
+import com.google.android.gms.location.ActivityTransitionRequest;
+import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AirMouseFragment extends Fragment implements SensorEventListener, View.OnTouchListener {
 
@@ -33,7 +49,9 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     private boolean onPaused;
     private GestureDetector gestureDetector;
-    private Sensor sensorAccel;
+    private Sensor sensorLinearAcceleration;
+    private Sensor sensorAccelerometer;
+    ActivityRecognitionClient activityRecognitionClient;
 
     private float accelY;
     private double prevTime;
@@ -43,6 +61,12 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
     private float prevAccelY;
     private float timestamp;
     private static final float NS2S = 1.0f / 1000000000.0f;
+
+    private float[] mGravity;
+    private double mAccelLast;
+    private double mAccelCurrent;
+    private double mAccel;
+    private boolean isMoving = false;
 
 
     public AirMouseFragment() {
@@ -61,14 +85,25 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
         onPaused = false;
 
+        activityRecognitionClient = ActivityRecognition.getClient(getContext());
+
+        requestForUpdates();
+
         gestureDetector = new GestureDetector(getActivity(), new AirMouseGesture());
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        sensorAccel = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        sensorLinearAcceleration = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, sensorAccel, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorLinearAcceleration, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
+
+    private void requestForUpdates() {
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,39 +118,51 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = sensorEvent.values.clone();
+            // Shake detection
+            float x = mGravity[0];
+            float y = mGravity[1];
+            float z = mGravity[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = Math.sqrt(x * x + y * y + z * z);
+            double delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta;
+            // Make this higher or lower according to how much
+            // motion you want to detect
+            if (mAccel > 0.1) {
+                // do something
+                isMoving = true;
+                Log.d("moving", "moving");
+            } else {
+                isMoving = false;
+                Log.d("moving", "not moving");
+            }
+        }
+
+        /*
         if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            if (!isMoving) {
+                velY = 0;
+                distY = 0;
+                return;
+            }
+
             if (timestamp == 0) timestamp = sensorEvent.timestamp;
             final float dT = (sensorEvent.timestamp - timestamp) * NS2S;
             timestamp = sensorEvent.timestamp;
-            float threshold = 0.5f;
-
             accelY = sensorEvent.values[1];
 
-            /**
-             * Must find a way to determine when the phone is moving
-             * So that I can actually integrate the y values
-             * determining movement by acceleration values isn't good
-             * because values are assymetric (goes negative then positive, then zero)
-             * and the threshold overlaps
-             */
-
             velY += accelY * dT;
-            if (velY > threshold || velY < -threshold) {
-                Log.d("moving", "moving");
-                distY += prevVelY + velY * dT;
-                prevAccelY = accelY;
-                prevVelY = velY;
+            distY += prevVelY + velY * dT;
+            prevAccelY = accelY;
+            prevVelY = velY;
 
-                double senstivitiy = 100;
-                Log.d("distance", distY * senstivitiy + " ");
-                MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + 0 + ", 'y': " + distY * senstivitiy + "}"));
-            } else {
-                Log.d("moving", "not moving");
-                velY = 0;
-                distY = 0;
-            }
+            double senstivitiy = 10;
+            Log.d("distance", distY * senstivitiy + " ");
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + 0 + ", 'y': " + distY * senstivitiy + "}"));
             return;
-        }
+         */
 
         //Determine if this fragment is being used by the user
         //If not, return
@@ -133,7 +180,7 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
         connected = callback.ConnectedValue();
         if (connected) {
             //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
-            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + sensorEvent.values[2] * 65 + ", 'y': " + 0 + "}"));
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + sensorEvent.values[0] * 65 + ", 'y': " + 0 + "}"));
         }
     }
 
