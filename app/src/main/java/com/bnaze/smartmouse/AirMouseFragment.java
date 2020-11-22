@@ -51,7 +51,6 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
     private GestureDetector gestureDetector;
     private Sensor sensorLinearAcceleration;
     private Sensor sensorAccelerometer;
-    ActivityRecognitionClient activityRecognitionClient;
 
     private float accelY;
     private double prevTime;
@@ -84,26 +83,17 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
         super.onCreate(savedInstanceState);
 
         onPaused = false;
-
-        activityRecognitionClient = ActivityRecognition.getClient(getContext());
-
-        requestForUpdates();
-
         gestureDetector = new GestureDetector(getActivity(), new AirMouseGesture());
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         sensorLinearAcceleration = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(this, sensorLinearAcceleration, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
-
-    private void requestForUpdates() {
-
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,35 +108,16 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            mGravity = sensorEvent.values.clone();
-            // Shake detection
-            float x = mGravity[0];
-            float y = mGravity[1];
-            float z = mGravity[2];
-            mAccelLast = mAccelCurrent;
-            mAccelCurrent = Math.sqrt(x * x + y * y + z * z);
-            double delta = mAccelCurrent - mAccelLast;
-            mAccel = mAccel * 0.9f + delta;
-            // Make this higher or lower according to how much
-            // motion you want to detect
-            if (mAccel > 0.1) {
-                // do something
-                isMoving = true;
-                Log.d("moving", "moving");
-            } else {
-                isMoving = false;
-                Log.d("moving", "not moving");
-            }
-        }
 
-        /*
         if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-            if (!isMoving) {
+            if (checkIfMoving(sensorEvent) == false) {
+                Log.d("moving", "not moving");
                 velY = 0;
+                prevVelY = 0;
                 distY = 0;
                 return;
             }
+            ;
 
             if (timestamp == 0) timestamp = sensorEvent.timestamp;
             final float dT = (sensorEvent.timestamp - timestamp) * NS2S;
@@ -161,8 +132,8 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
             double senstivitiy = 10;
             Log.d("distance", distY * senstivitiy + " ");
             MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + 0 + ", 'y': " + distY * senstivitiy + "}"));
-            return;
-         */
+
+        }
 
         //Determine if this fragment is being used by the user
         //If not, return
@@ -180,8 +151,21 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
         connected = callback.ConnectedValue();
         if (connected) {
             //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
-            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + sensorEvent.values[0] * 65 + ", 'y': " + 0 + "}"));
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + sensorEvent.values[2] * 65 + ", 'y': " + 0 + "}"));
         }
+    }
+
+
+    private boolean checkIfMoving(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        float diff = (float) Math.sqrt(x * x + y * y + z * z);
+        if (diff > 0.5) { // 0.5 is a threshold, you can test it and change it
+            return true;
+        }
+        return false;
     }
 
     @Override
