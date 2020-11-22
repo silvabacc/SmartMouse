@@ -33,6 +33,17 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     private boolean onPaused;
     private GestureDetector gestureDetector;
+    private Sensor sensorAccel;
+
+    private float accelY;
+    private double prevTime;
+    private float velY;
+    private float distY;
+    private float prevVelY;
+    private float prevAccelY;
+    private float timestamp;
+    private static final float NS2S = 1.0f / 1000000000.0f;
+
 
     public AirMouseFragment() {
         // Required empty public constructor
@@ -54,7 +65,9 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        sensorAccel = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorAccel, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -70,25 +83,57 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            if (timestamp == 0) timestamp = sensorEvent.timestamp;
+            final float dT = (sensorEvent.timestamp - timestamp) * NS2S;
+            timestamp = sensorEvent.timestamp;
+            float threshold = 0.5f;
+
+            accelY = sensorEvent.values[1];
+
+            /**
+             * Must find a way to determine when the phone is moving
+             * So that I can actually integrate the y values
+             * determining movement by acceleration values isn't good
+             * because values are assymetric (goes negative then positive, then zero)
+             * and the threshold overlaps
+             */
+
+            velY += accelY * dT;
+            if (velY > threshold || velY < -threshold) {
+                Log.d("moving", "moving");
+                distY += prevVelY + velY * dT;
+                prevAccelY = accelY;
+                prevVelY = velY;
+
+                double senstivitiy = 100;
+                Log.d("distance", distY * senstivitiy + " ");
+                MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + 0 + ", 'y': " + distY * senstivitiy + "}"));
+            } else {
+                Log.d("moving", "not moving");
+                velY = 0;
+                distY = 0;
+            }
+            return;
+        }
+
         //Determine if this fragment is being used by the user
         //If not, return
         if (isAdded() && isVisible() && getUserVisibleHint()) {
             onPaused = false;
-        }
-        else{
+        } else {
             onPaused = true;
             return;
         }
 
-        if(onPaused == true){
+        if (onPaused == true) {
             return;
         }
 
         connected = callback.ConnectedValue();
-
-        if(connected){
+        if (connected) {
             //Message value must be in json format {"type" : "type", "value" : {"x": x, "y": y}}
-            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE,  "{'x': " + sensorEvent.values[2]*65 + ", 'y': " + sensorEvent.values[0]*65+"}"));
+            MessageQueue.getInstance().push(Message.newMessage(MessageType.AIR_MOUSE, "{'x': " + sensorEvent.values[2] * 65 + ", 'y': " + 0 + "}"));
         }
     }
 
@@ -102,8 +147,7 @@ public class AirMouseFragment extends Fragment implements SensorEventListener, V
             if (!isVisibleToUser) {
                 Log.d("Fragments", "AirMouse Not visible anymore");
                 onPaused = true;
-            }
-            else{
+            } else {
                 Log.d("Fragments", "AirMouse visible.");
                 onPaused = false;
             }
