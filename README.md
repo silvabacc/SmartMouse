@@ -7,6 +7,7 @@ to interact with your computer by using your smartphone remotely
 - Android Device with USB Debugging enabled and default configuration set to File Transfer
     - [Guide to enabling this feature on your phone](https://developer.android.com/studio/debug/dev-options)
 - A wifi connection (Wired/Ethernet connection will not work)
+- Optional JDK 11 (You can try latest JDK but last tested with JDK 11)
 
 ## To Use
 1. Import this project into Android Studio
