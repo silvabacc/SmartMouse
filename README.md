@@ -2,21 +2,22 @@
 This application was made for my undergraduate project, where I created an Android application called SmartMouse that allows you
 to interact with your computer by using your smartphone remotely
 
-## To Use
-1. Install SmartMouse on an Android application (which can be done via Android Studio)
+## Prerequisites
+- JDK (Recommended JDK 11)
+- Android Studio
+- Android Device with USB Debugging enabled and default configuration set to File Transfer
+    - [Guide to enabling this feature on your phone](https://developer.android.com/studio/debug/dev-options)
+- A wifi connection (Wired/Ethernet connection will not work)
 
-    a. To install the application, enable USB Debugging on the Android device and set Default USB Configuration to File Transfer
-    
-    b. Plug in the Android device via cable into the computer
-    
-    c. Install by using Android Studio
-    
-2. Run the server application (found here https://github.com/bnaze/ug_project_server)
+## To Use
+1. Import this project into Android Studio
+2. Make sure your device is connected to your computer and you've allowed USB debugging
+2. Run the server application [found here](https://github.com/bnaze/ug_project_server)
 3. Use the application to connect to the server. Ensure that the smartphone and computer/laptop is connected to WiFi
 
     a. Use the IP address starting 192.168.x.x
     
-    b. The IP address should be given to you when executing the server code (in console)
+    b. The IP address should be given to you when executing the server code in console
     
 # What can I do with this?
 The application implements three different type of mice; air, touchpad and accelerometer mouse
