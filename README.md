@@ -3,7 +3,6 @@ This application was made for my undergraduate project, where I created an Andro
 to interact with your computer by using your smartphone remotely
 
 ## Prerequisites
-- JDK (Recommended JDK 11)
 - Android Studio
 - Android Device with USB Debugging enabled and default configuration set to File Transfer
     - [Guide to enabling this feature on your phone](https://developer.android.com/studio/debug/dev-options)
