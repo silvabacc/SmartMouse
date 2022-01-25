@@ -178,7 +178,12 @@ Keyboard inputs are listened and acted on by the server
 
 # Connection
 Users should run the server first (in terminal) to obtain the host IP address (beginning with 192)
-<img src="https://github.com/bnaze/SmartMouse/blob/master/readme_images/a6.png?raw=true"/>
+```java Console output of server
+Server started at fe80:0:0:0:xxxx:xxxx:xxxx:xxxxxxxxxxxx:1024
+Server started at 192.168.x.x:1024
+Server started at 0:0:0:0:0:0:0:1%lo:1024
+Server started at 127.0.0.1:1024
+```
 
 Connection dialog is available for users to connect to
 
